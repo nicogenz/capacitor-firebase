@@ -5,12 +5,16 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.getcapacitor.JSArray;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 public class FirebaseStorage {
 
@@ -44,5 +48,12 @@ public class FirebaseStorage {
 
     public Task<Uri> getDownloadUrl(@NonNull String location) {
         return getReference(location).getDownloadUrl();
+    }
+
+    public UploadTask putBytes(@NonNull String location, @NonNull JSArray bytes) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(bytes);
+        return getReference(location).putBytes(byteArrayOutputStream.toByteArray());
     }
 }

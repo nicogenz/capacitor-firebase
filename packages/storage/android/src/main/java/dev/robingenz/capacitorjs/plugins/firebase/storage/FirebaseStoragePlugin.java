@@ -1,5 +1,6 @@
 package dev.robingenz.capacitorjs.plugins.firebase.storage;
 
+import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -7,6 +8,7 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @CapacitorPlugin(name = "FirebaseStorage")
 public class FirebaseStoragePlugin extends Plugin {
@@ -14,6 +16,7 @@ public class FirebaseStoragePlugin extends Plugin {
     private static final String ERROR_FILE_LOCATION_MISSING = "file location must be provided.";
     private static final String ERROR_FILE_NAME_MISSING = "file name must be provided.";
     private static final String ERROR_FILE_EXTENSION_MISSING = "file extension must be provided.";
+    private static final String ERROR_FILE_BYTES_MISSING = "file bytes must be provided.";
     private FirebaseStorage implementation;
 
     @Override
@@ -89,5 +92,26 @@ public class FirebaseStoragePlugin extends Plugin {
                     call.resolve(jsObject);
                 })
                 .addOnFailureListener(exception -> call.reject(exception.getMessage(), exception));
+    }
+
+    @PluginMethod
+    public void putBytes(PluginCall call) {
+        String location = call.getString("location");
+        if (location == null || location.trim().isEmpty()) {
+            call.reject(ERROR_FILE_LOCATION_MISSING);
+            return;
+        }
+        JSArray bytes = call.getArray("bytes");
+        if (bytes == null) {
+            call.reject(ERROR_FILE_BYTES_MISSING);
+            return;
+        }
+        try {
+            implementation.putBytes(location, bytes)
+                    .addOnSuccessListener(uri -> call.resolve())
+                    .addOnFailureListener(exception -> call.reject(exception.getMessage(), exception));
+        } catch (IOException exception) {
+            call.reject(exception.getMessage(), exception);
+        }
     }
 }
