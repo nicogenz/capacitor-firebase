@@ -4,7 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
+import java.io.IOException;
 
 public class FirebaseStorage {
 
@@ -30,5 +34,9 @@ public class FirebaseStorage {
      */
     public Task<byte[]> getBytes(@NonNull String location) {
         return getReference(location).getBytes(1024 * 1024);
+    }
+
+    public FileDownloadTask getFile(@NonNull String location, @NonNull String name, @NonNull String extension) throws IOException {
+        return getReference(location).getFile(File.createTempFile(name, extension));
     }
 }
