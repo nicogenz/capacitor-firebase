@@ -74,4 +74,20 @@ public class FirebaseStoragePlugin extends Plugin {
             call.reject(exception.getMessage(), exception);
         }
     }
+
+    @PluginMethod
+    public void getDownloadUrl(PluginCall call) {
+        String location = call.getString("location");
+        if (location == null || location.trim().isEmpty()) {
+            call.reject(ERROR_FILE_LOCATION_MISSING);
+            return;
+        }
+        implementation.getDownloadUrl(location)
+                .addOnSuccessListener(uri -> {
+                    JSObject jsObject = new JSObject();
+                    jsObject.put("url", uri.toString());
+                    call.resolve(jsObject);
+                })
+                .addOnFailureListener(exception -> call.reject(exception.getMessage(), exception));
+    }
 }

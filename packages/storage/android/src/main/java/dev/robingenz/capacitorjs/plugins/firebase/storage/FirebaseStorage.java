@@ -1,5 +1,7 @@
 package dev.robingenz.capacitorjs.plugins.firebase.storage;
 
+import android.net.Uri;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -38,5 +40,9 @@ public class FirebaseStorage {
 
     public FileDownloadTask getFile(@NonNull String location, @NonNull String name, @NonNull String extension) throws IOException {
         return getReference(location).getFile(File.createTempFile(name, extension));
+    }
+
+    public Task<Uri> getDownloadUrl(@NonNull String location) {
+        return getReference(location).getDownloadUrl();
     }
 }
