@@ -1,5 +1,6 @@
 package dev.robingenz.capacitorjs.plugins.firebase.storage;
 
+import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -25,6 +26,22 @@ public class FirebaseStoragePlugin extends Plugin {
         }
         implementation.delete(location)
                 .addOnSuccessListener(aVoid -> call.resolve())
+                .addOnFailureListener(exception -> call.reject(exception.getMessage(), exception));
+    }
+
+    @PluginMethod
+    public void getBytes(PluginCall call) {
+        String location = call.getString("location");
+        if (location == null || location.trim().isEmpty()) {
+            call.reject(ERROR_FILE_LOCATION_MISSING);
+            return;
+        }
+        implementation.getBytes(location)
+                .addOnSuccessListener(bytes -> {
+                    JSObject jsObject = new JSObject();
+                    jsObject.put("bytes", bytes);
+                    call.resolve(jsObject);
+                })
                 .addOnFailureListener(exception -> call.reject(exception.getMessage(), exception));
     }
 }
